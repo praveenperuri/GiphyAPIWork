@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Favorite topics</title>
+    <style type="text/css">
+    button,
+    div,
+    form,
+    input {
+        margin: 10px;
+    }
+
+/*<div class="image" style="margin:1.42em; width:203px; text-align:center;">
+    <a href="#">
+        <img 
+            src="http://webdesignpaciano.com/dbl-new/places/paciano/11.jpg" 
+            alt="Central Square and Comune Building with Bell Tower Paciano 1" 
+            width="203" height="270" 
+         />
+  <br>
+  Central Square and Comune Building with Bell Tower Paciano 1
+  </a>  
+</div>*/
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Topic Search</h1>
+        <!-- Rendered buttons will get dumped Here  -->
+        <div id="buttons-view"></div>
+        <form id="topic-form">
+            <label for="topic-input">Add a topic Bro</label>
+            <input type="text" id="topic-input">
+            <br>
+            <!-- Button triggers new topic to be added -->
+            <input id="add-topic" type="submit" value="Add a topic Bro">
+        </form>
+        <!-- topics will get dumped here -->
+        <div id="topics-view"></div>
+        <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript">
+        // Initial array of topics
+        var topics = ["Lebron James", "Odell Beckham Jr.", "Cristiano Ronaldo", "Tom Brady", "LeVeon Bell", "JJ Watt", "Von Miller", "Michael Phelps", "Roger Federer"];
+
+        // displaytopicInfo function re-renders the HTML to display the appropriate content
+        function displayInfo() {
+
+            var topic = $(this).attr("data-name");
+            var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + topic + "&api_key=dc6zaTOxFJmzC";
+
+            // Creates AJAX call for the specific topic button being clicked
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            }).done(function(response) {
+
+                // YOUR CODE GOES HERE!!!
+                console.log(response);
+
+                var myJSON = JSON.stringify(response.data);
+
+                var topicInfo = $("<div>");
+
+                topicInfo.addClass("container");
+
+                for (i = 0; i < 10; i++) {
+
+                    var gifDiv = $("<div>");
+
+                    var rating = $("<label>");
+
+                    var poster = $("<iFrame>");
+
+                    poster.addClass("framer");
+
+                    gifDiv.addClass("image");
+
+                    //gifDiv.attr("style","margin:1.42em; width:203px; text-align:center;")
+
+                    rating.text("Rating: " + response.data[i].rating);
+                    poster.attr("src", response.data[i].images.original_still.url); //.original_still.url
+
+                    poster.attr("anim-src", response.data[i].embed_url);
+
+
+                    
+
+                    gifDiv.append(rating, "<br/>", poster);
+
+                    topicInfo.append(gifDiv);
+
+                    $("#topics-view").prepend(topicInfo);
+
+                }
+
+
+
+
+                // var topicInfo = $("<div>");
+
+                // var rating = $("<label>");
+
+                // var title = $("<label>");
+
+                // var poster = $("<img>");
+
+                // rating.text("Rating: " + response.Rated);
+
+                // title.text("Title: " + response.Title);
+
+                // poster.attr("src", response.url);
+
+                // topicInfo.append(rating, "<br/>", title, "<br/>", poster);
+
+                // $("#topics-view").prepend(topicInfo);
+
+
+            });
+
+        }
+
+        // Function for displaying topic data
+        function renderButtons() {
+
+            // Deletes the topics prior to adding new topics
+            // (this is necessary otherwise you will have repeat buttons)
+            $("#buttons-view").empty();
+
+            // Loops through the array of topics
+            for (var i = 0; i < topics.length; i++) {
+
+                // Then dynamicaly generates buttons for each topic in the array
+                // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
+                var a = $("<button>");
+                // Adds a class of topic to our button
+                a.addClass("topic");
+                // Added a data-attribute
+                a.attr("data-name", topics[i]);
+                // Provided the initial button text
+                a.text(topics[i]);
+                // Added the button to the buttons-view div
+                $("#buttons-view").append(a);
+            }
+        }
+
+        // This function handles events where the add topic button is clicked
+        $("#add-topic").on("click", function(event) {
+            event.preventDefault();
+            // This line of code will grab the input from the textbox
+            var topic = $("#topic-input").val().trim();
+
+            // The topic from the textbox is then added to our array
+            topics.push(topic);
+
+            // Calling renderButtons which handles the processing of our topic array
+            renderButtons();
+
+        });
+
+        $(".framer").on("hover", function(){
+            var stillsrc = $(this).attr("src");
+            var gifsrc = $(this).attr("anim-src");
+            $(this).attr("src", gifsrc);
+        },
+        function()
+        {
+            var stillsrc = $(this).attr("src");
+            var gifsrc = $(this).attr("anim-src");
+            $(this).attr("src", stillsrc);
+        });
+
+        // $('iframe').contents().find('video').each(function () 
+        // {
+        //         this.currentTime = 0;
+        //         this.pause();
+        // });
+
+        function stop(){
+          var imagefrms = document.getElementByClassName("image");
+          for(i=0;i<imagefrms.length;i++){
+            imagefrms[i].src = imagefrms[i].src;
+          }
+        }
+
+        // Adding click event listeners to all elements with a class of "topic"
+        $(document).on("click", ".topic", displayInfo);
+
+        //$("iframe").on("load",".framer", stop());
+            //$(this).attr("src",$(this).attr("src"));
+
+
+        // Calling the renderButtons function to display the intial buttons
+        renderButtons();
+        </script>
+    </div>
+</body>
+
+</html>
